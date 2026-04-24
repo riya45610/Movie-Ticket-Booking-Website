@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 const AuthContext = createContext(null);
 
@@ -23,7 +24,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const response = await axios.post('http://localhost:8080/api/auth/login', {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
         username,
         password
       });
@@ -42,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Login error:', error);
       if (error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
-        return { success: false, message: 'Cannot connect to server. Please ensure backend is running on port 8080.' };
+        return { success: false, message: 'Cannot connect to server. Please try again later.' };
       }
       if (error.response && error.response.status === 401) {
         return { success: false, message: 'Invalid username or password' };
@@ -54,7 +55,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (username, password, role, email, fullName) => {
     try {
       console.log('Sending registration request:', { username, role, email, fullName });
-      const response = await axios.post('http://localhost:8080/api/auth/register', {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/register`, {
         username,
         password,
         role: role || 'ROLE_USER',
@@ -78,7 +79,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Registration error:', error);
       if (error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
-        return { success: false, message: 'Cannot connect to server. Please ensure backend is running on port 8080.' };
+        return { success: false, message: 'Cannot connect to server. Please try again later.' };
       }
       if (error.response) {
         if (error.response.status === 400) {
